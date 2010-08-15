@@ -1,0 +1,25 @@
+---
+name: Net-Google-Blogger
+version: 0.01
+author:
+  - 'Egor Shipovalov <kogdaugodno@gmail.com>'
+abstract: Interface to Google's Blogger service
+license: perl
+resources:
+  license: http://dev.perl.org/licenses/
+build_requires:
+  Test::More: 0
+configure_requires:
+  Module::Build: 0.340201
+provides:
+  Net::Google::Blogger:
+    file: lib/Net/Google/Blogger.pm
+    version: 0.01
+  Net::Google::Blogger::Blog:
+    file: lib/Net/Google/Blogger/Blog.pm
+  Net::Google::Blogger::Blog::Entry:
+    file: lib/Net/Google/Blogger/Blog/Entry.pm
+generated_by: Module::Build version 0.340201
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
