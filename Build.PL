@@ -10,6 +10,12 @@ my $builder = Module::Build->new(
     build_requires => {
         'Test::More' => 0,
     },
+    requires => {
+        'Any::Moose'            => 0,
+        'LWP::UserAgent'        => 0,
+        'HTTP::Request::Common' => 0,
+        'XML::Simple'           => 0,
+    },
     add_to_cleanup      => [ 'Net-Google-Blogger-*' ],
     create_makefile_pl => 'traditional',
 );

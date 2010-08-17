@@ -5,7 +5,11 @@ WriteMakefile
           'NAME' => 'Net::Google::Blogger',
           'VERSION_FROM' => 'lib/Net/Google/Blogger.pm',
           'PREREQ_PM' => {
-                           'Test::More' => 0
+                           'Any::Moose' => 0,
+                           'HTTP::Request::Common' => 0,
+                           'LWP::UserAgent' => 0,
+                           'Test::More' => 0,
+                           'XML::Simple' => 0
                          },
           'INSTALLDIRS' => 'site',
           'EXE_FILES' => [],
