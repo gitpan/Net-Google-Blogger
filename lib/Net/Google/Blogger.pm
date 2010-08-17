@@ -12,6 +12,8 @@ use Data::Dumper;
 use Net::Google::Blogger::Blog;
 
 
+our $VERSION = '0.05';
+
 has login_id   => ( is => 'ro', isa => 'Str', required => 1 );
 has password   => ( is => 'ro', isa => 'Str', required => 1 );
 
@@ -113,8 +115,6 @@ Net::Google::Blogger - Interface to Google's Blogger service
 Version 0.04
 
 =cut
-
-our $VERSION = '0.04';
 
 1;
 

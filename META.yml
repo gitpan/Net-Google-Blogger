@@ -1,6 +1,6 @@
 ---
 name: Net-Google-Blogger
-version: 0.04
+version: 0.05
 author:
   - 'Egor Shipovalov <kogdaugodno@gmail.com>'
 abstract: Interface to Google's Blogger service
@@ -20,10 +20,13 @@ configure_requires:
 provides:
   Net::Google::Blogger:
     file: lib/Net/Google/Blogger.pm
+    version: 0.05
   Net::Google::Blogger::Blog:
     file: lib/Net/Google/Blogger/Blog.pm
+    version: 0.05
   Net::Google::Blogger::Blog::Entry:
     file: lib/Net/Google/Blogger/Blog/Entry.pm
+    version: 0.05
 generated_by: Module::Build version 0.340201
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
