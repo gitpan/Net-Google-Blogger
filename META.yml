@@ -1,6 +1,6 @@
 ---
 name: Net-Google-Blogger
-version: 0.01
+version: 0.02
 author:
   - 'Egor Shipovalov <kogdaugodno@gmail.com>'
 abstract: Interface to Google's Blogger service
@@ -14,7 +14,7 @@ configure_requires:
 provides:
   Net::Google::Blogger:
     file: lib/Net/Google/Blogger.pm
-    version: 0.01
+    version: 0.02
   Net::Google::Blogger::Blog:
     file: lib/Net/Google/Blogger/Blog.pm
   Net::Google::Blogger::Blog::Entry:

@@ -18,6 +18,8 @@ has source_xml_tree => ( is => 'rw', isa => 'HashRef', default => sub { {} }, re
 has categories      => ( is => 'rw', isa => 'ArrayRef[Str]', auto_deref => 1 );
 has blog            => ( is => 'ro', isa => 'Net::Google::Blogger::Blog', required => 1 );
 
+__PACKAGE__->meta->make_immutable;
+
 
 sub BUILDARGS {
     ## Populates object attributes from parsed XML source.
@@ -116,11 +118,11 @@ Net::Google::Blogger::Entry - represents blog entry in Net::Google::Blogger pack
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 SYNOPSIS
 

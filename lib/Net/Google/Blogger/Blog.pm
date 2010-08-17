@@ -23,6 +23,8 @@ has entries => (
     auto_deref => 1,
 );
 
+__PACKAGE__->meta->make_immutable;
+
 
 sub BUILDARGS {
     ## Parses source XML into initial attribute values.
@@ -85,11 +87,11 @@ Net::Google::Blogger::Blog - represents blog entity of Google Blogger service.
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 SYNOPSIS
 

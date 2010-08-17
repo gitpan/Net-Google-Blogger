@@ -12,7 +12,7 @@ use Data::Dumper;
 use Net::Google::Blogger::Blog;
 
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 has login_id   => ( is => 'ro', isa => 'Str', required => 1 );
 has password   => ( is => 'ro', isa => 'Str', required => 1 );
@@ -30,6 +30,8 @@ has ua => (
     lazy_build => 1,
     is         => 'ro',
 );
+
+__PACKAGE__->meta->make_immutable;
 
 
 sub BUILD {
@@ -113,7 +115,7 @@ Net::Google::Blogger - Interface to Google's Blogger service
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
@@ -125,36 +127,36 @@ it easy to use and extend. It also utilizes newer style GData API for
 better compatibility. You can retrieve list of blogs for your account,
 add or update entries. Deletion of entries is currently not supported.
 
-use Net::Google::Blogger;
+ use Net::Google::Blogger;
 
-my $blogger = Net::Google::Blogger->new(
-    login_id   => 'myemail@gmail.com',
-    password   => 'mypassword',
-    blogger_id => '08366371172860845106', # ID visible in your Blogger profile link
-);
+ my $blogger = Net::Google::Blogger->new(
+     login_id   => 'myemail@gmail.com',
+     password   => 'mypassword',
+     blogger_id => '08366371172860845106', # ID visible in your Blogger profile link
+ );
 
-my @blogs = $blogger->blogs;
-foreach my $blog (@blogs) {
-    print join ', ', $blog->id, $blog->title, $blog->public_url, "\n";
-}
+ my @blogs = $blogger->blogs;
+ foreach my $blog (@blogs) {
+     print join ', ', $blog->id, $blog->title, $blog->public_url, "\n";
+ }
 
-my $blog = $blogs[1];
-my @entries = $blog->entries;
+ my $blog = $blogs[1];
+ my @entries = $blog->entries;
 
-my ($entry) = @entries;
-print $entry->title, "\n", $entry->content;
+ my ($entry) = @entries;
+ print $entry->title, "\n", $entry->content;
 
-$entry->title('Updated Title');
-$entry->content('Updated content');
-$entry->categories([ qw/category1 category2/ ]);
-$entry->save;
+ $entry->title('Updated Title');
+ $entry->content('Updated content');
+ $entry->categories([ qw/category1 category2/ ]);
+ $entry->save;
 
-my $new_entry = Net::Google::Blogger::Blog::Entry->new(
-    title   => 'New entry',
-    content => 'New content',
-    blog    => $blog,
-);
-$new_entry->save;
+ my $new_entry = Net::Google::Blogger::Blog::Entry->new(
+     title   => 'New entry',
+     content => 'New content',
+     blog    => $blog,
+ );
+ $new_entry->save;
 
 
 =head1 SUBROUTINES/METHODS
@@ -166,11 +168,11 @@ connect to the server and authenticate with the given credentials.
 Authentication token received will be stored privately and used in
 all subsequent requests.
 
-my $blogger = Net::Google::Blogger->new(
-    login_id   => 'myemail@gmail.com',
-    password   => 'mypassword',
-    blogger_id => '123456789',
-);
+ my $blogger = Net::Google::Blogger->new(
+     login_id   => 'myemail@gmail.com',
+     password   => 'mypassword',
+     blogger_id => '123456789',
+ );
 
 =cut
 
