@@ -85,14 +85,6 @@ __END__
 
 Net::Google::Blogger::Blog - represents blog entity of Google Blogger service.
 
-=head1 VERSION
-
-Version 0.03
-
-=cut
-
-our $VERSION = '0.03';
-
 =head1 SYNOPSIS
 
 Please see L<Net::Google::Blogger>.

@@ -12,11 +12,8 @@ use Data::Dumper;
 use Net::Google::Blogger::Blog;
 
 
-our $VERSION = '0.03';
-
 has login_id   => ( is => 'ro', isa => 'Str', required => 1 );
 has password   => ( is => 'ro', isa => 'Str', required => 1 );
-has blogger_id => ( is => 'ro', isa => 'Str', required => 1 );
 
 has blogs => (
     is         => 'ro',
@@ -64,7 +61,7 @@ sub _build_blogs {
     ## Populates 'blogs' property with list of instances of Net::Google::Blogger::Blog.
     my $self = shift;
 
-    my $response = $self->http_get('http://www.blogger.com/feeds/' . $self->blogger_id . '/blogs');
+    my $response = $self->http_get('http://www.blogger.com/feeds/default/blogs');
     my $response_tree = XML::Simple::XMLin($response->content, ForceArray => 1);
 
     return [
@@ -105,8 +102,6 @@ sub http_post {
 }
 
 
-1;
-
 __END__
 
 =head1 NAME
@@ -115,9 +110,13 @@ Net::Google::Blogger - Interface to Google's Blogger service
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
 
 =cut
+
+our $VERSION = '0.04';
+
+1;
 
 =head1 SYNOPSIS
 

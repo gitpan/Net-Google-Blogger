@@ -9,6 +9,7 @@ my $builder = Module::Build->new(
     dist_version_from   => 'lib/Net/Google/Blogger.pm',
     build_requires => {
         'Test::More' => 0,
+        'Test::Deep' => 0,
     },
     requires => {
         'Any::Moose'            => 0,

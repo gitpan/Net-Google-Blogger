@@ -8,6 +8,7 @@ WriteMakefile
                            'Any::Moose' => 0,
                            'HTTP::Request::Common' => 0,
                            'LWP::UserAgent' => 0,
+                           'Test::Deep' => 0,
                            'Test::More' => 0,
                            'XML::Simple' => 0
                          },

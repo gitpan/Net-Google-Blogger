@@ -1,6 +1,6 @@
 ---
 name: Net-Google-Blogger
-version: 0.03
+version: 0.04
 author:
   - 'Egor Shipovalov <kogdaugodno@gmail.com>'
 abstract: Interface to Google's Blogger service
@@ -8,6 +8,7 @@ license: perl
 resources:
   license: http://dev.perl.org/licenses/
 build_requires:
+  Test::Deep: 0
   Test::More: 0
 requires:
   Any::Moose: 0
@@ -19,7 +20,6 @@ configure_requires:
 provides:
   Net::Google::Blogger:
     file: lib/Net/Google/Blogger.pm
-    version: 0.03
   Net::Google::Blogger::Blog:
     file: lib/Net/Google/Blogger/Blog.pm
   Net::Google::Blogger::Blog::Entry:

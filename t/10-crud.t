@@ -10,20 +10,19 @@ use Net::Google::Blogger;
 plan(
     $ENV{TEST_BLOGGER_LOGIN_ID} ?
         ( tests => 8 ) :
-        ( skip_all => 'To run live tests, set TEST_BLOGGER_LOGIN_ID, TEST_BLOGGER_PASSWORD and TEST_BLOGGER_ID environment variables to identify test Blogger account.')
+        ( skip_all => 'To run live tests, set TEST_BLOGGER_LOGIN_ID, TEST_BLOGGER_PASSWORD and TEST_BLOGGER_BLOG_ID environment variables to identify test Blogger account and blog.')
 );
 
 my $blogger = Net::Google::Blogger->new(
     login_id   => $ENV{TEST_BLOGGER_LOGIN_ID},
     password   => $ENV{TEST_BLOGGER_PASSWORD},
-    blogger_id => $ENV{TEST_BLOGGER_ID},
 );
 ok($blogger, 'Authenticated');
 
 my @blogs = $blogger->blogs;
 ok(@blogs > 0, 'Blogs retrieved');
 
-my $blog = $blogs[1];
+my ($blog) = grep $_->numeric_id == $ENV{TEST_BLOGGER_BLOG_ID}, @blogs;
 my ($entry) = $blog->entries;
 ok($entry, 'Entry retrieved');
 
