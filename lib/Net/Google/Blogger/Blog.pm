@@ -8,7 +8,7 @@ use Net::Google::Blogger::Blog::Entry;
 use XML::Simple ();
 
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 has id              => ( is => 'ro', isa => 'Str', required => 1 );
 has numeric_id      => ( is => 'ro', isa => 'Str', required => 1 );

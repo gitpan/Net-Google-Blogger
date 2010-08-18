@@ -7,7 +7,7 @@ use Any::Moose;
 use XML::Simple ();
 
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 has id              => ( is => 'rw', isa => 'Str' );
 has title           => ( is => 'rw', isa => 'Str' );

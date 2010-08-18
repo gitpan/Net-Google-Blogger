@@ -1,5 +1,8 @@
 Revision history for Net-Google-Blogger
 
+0.06    17 Aug 2010
+        Removed POD coverage testing as it complained about not documenting private attributes.
+
 0.04    17 Aug 2010
         Specifying numeric blogger ID is no longer required.
 

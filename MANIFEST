@@ -8,7 +8,6 @@ lib/Net/Google/Blogger/Blog/Entry.pm
 t/00-load.t
 t/10-crud.t
 t/manifest.t
-t/pod-coverage.t
 t/pod.t
 Makefile.PL
 META.yml
