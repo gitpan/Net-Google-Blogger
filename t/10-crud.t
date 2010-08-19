@@ -9,7 +9,7 @@ use Net::Google::Blogger;
 
 plan(
     $ENV{TEST_BLOGGER_LOGIN_ID} ?
-        ( tests => 8 ) :
+        ( tests => 9 ) :
         ( skip_all => 'To run live tests, set TEST_BLOGGER_LOGIN_ID, TEST_BLOGGER_PASSWORD and TEST_BLOGGER_BLOG_ID environment variables to identify test Blogger account and blog.')
 );
 
@@ -45,3 +45,6 @@ foreach (keys %new_entry_props) {
     no strict 'refs';
     &$func(@vals, "\"$_\" property saved correctly");
 }
+
+$entry->delete;
+isnt($blogger->http_get($entry->public_url)->code, 200, 'Entry deleted');

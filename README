@@ -4,7 +4,7 @@ This module suite provides interface to the Blogger service now run by
 Google. It's built in object-oriented fashion using Moose, which makes
 it easy to use and extend. It also utilizes newer style GData API for
 better compatibility. You can retrieve list of blogs for your account,
-add or update entries. Deletion of entries is currently not supported.
+add, update or delete entries.
 
 INSTALLATION
 

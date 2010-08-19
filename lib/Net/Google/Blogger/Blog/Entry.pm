@@ -7,7 +7,7 @@ use Any::Moose;
 use XML::Simple ();
 
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 has id              => ( is => 'rw', isa => 'Str' );
 has title           => ( is => 'rw', isa => 'Str' );
@@ -16,6 +16,7 @@ has author          => ( is => 'rw', isa => 'Str' );
 has published       => ( is => 'rw', isa => 'Str' );
 has updated         => ( is => 'rw', isa => 'Str' );
 has edit_url        => ( is => 'rw', isa => 'Str' );
+has public_url      => ( is => 'rw', isa => 'Str' );
 has source_xml_tree => ( is => 'rw', isa => 'HashRef', default => sub { {} }, required => 1 );
 has categories      => ( is => 'rw', isa => 'ArrayRef[Str]', auto_deref => 1 );
 has blog            => ( is => 'ro', isa => 'Net::Google::Blogger::Blog', required => 1 );
@@ -48,6 +49,7 @@ sub source_xml_tree_to_attrs {
         updated    => $tree->{updated}[0],
         title      => $tree->{title}[0]{content},
         content    => $tree->{content}{content},
+        public_url => (grep $_->{rel} eq 'self', @{ $tree->{link} })[0]{href},
         edit_url   => (grep $_->{rel} eq 'edit', @{ $tree->{link} })[0]{href},
         categories => [ map $_->{term}, @{ $tree->{category} || [] } ],
     };
@@ -110,6 +112,14 @@ sub save {
 }
 
 
+sub delete {
+    ## Deletes the entry from server.
+    my $self = shift;
+
+    $self->blog->delete_entry($self);
+}
+
+
 1;
 
 __END__
@@ -138,6 +148,8 @@ Please see L<Net::Google::Blogger>.
 
 =item * C<updated>
 
+=item * C<public_url>
+
 =item * C<edit_url>
 
 =item * C<source_xml_tree>
@@ -162,6 +174,10 @@ Creates new entry. Requires C<blog>, C<content> and C<title> attributes.
 
 Saves changes to the entry.
 
+=item delete()
+
+Deltes the entry from server and parent blog object.
+
 =cut
 
 =back
@@ -175,9 +191,6 @@ Egor Shipovalov, C<< <kogdaugodno at gmail.com> >>
 Please report any bugs or feature requests to C<bug-net-google-api-blogger at rt.cpan.org>, or through
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Net-Google-API-Blogger>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
-
-
-
 
 =head1 SUPPORT
 

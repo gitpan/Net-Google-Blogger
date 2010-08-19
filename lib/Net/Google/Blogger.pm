@@ -12,7 +12,7 @@ use Data::Dumper;
 use Net::Google::Blogger::Blog;
 
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 has login_id   => ( is => 'ro', isa => 'Str', required => 1 );
 has password   => ( is => 'ro', isa => 'Str', required => 1 );
@@ -112,7 +112,7 @@ Net::Google::Blogger - Interface to Google's Blogger service
 
 =head1 VERSION
 
-Version 0.06
+Version 0.07
 
 =cut
 
@@ -124,14 +124,13 @@ This module suite provides interface to the Blogger service now run by
 Google. It's built in object-oriented fashion using Moose, which makes
 it easy to use and extend. It also utilizes newer style GData API for
 better compatibility. You can retrieve list of blogs for your account,
-add or update entries. Deletion of entries is currently not supported.
+add, update or delete entries.
 
  use Net::Google::Blogger;
 
  my $blogger = Net::Google::Blogger->new(
      login_id   => 'myemail@gmail.com',
      password   => 'mypassword',
-     blogger_id => '08366371172860845106', # ID visible in your Blogger profile link
  );
 
  my @blogs = $blogger->blogs;
@@ -156,6 +155,7 @@ add or update entries. Deletion of entries is currently not supported.
      blog    => $blog,
  );
  $new_entry->save;
+ $new_entry->delete;
 
 
 =head1 SUBROUTINES/METHODS
@@ -170,7 +170,6 @@ all subsequent requests.
  my $blogger = Net::Google::Blogger->new(
      login_id   => 'myemail@gmail.com',
      password   => 'mypassword',
-     blogger_id => '123456789',
  );
 
 =cut

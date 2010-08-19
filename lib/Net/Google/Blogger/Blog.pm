@@ -8,7 +8,7 @@ use Net::Google::Blogger::Blog::Entry;
 use XML::Simple ();
 
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 has id              => ( is => 'ro', isa => 'Str', required => 1 );
 has numeric_id      => ( is => 'ro', isa => 'Str', required => 1 );
@@ -19,7 +19,7 @@ has source_xml_tree => ( is => 'ro', isa => 'HashRef', required => 1 );
 has blogger         => ( is => 'ro', isa => 'Net::Google::Blogger', required => 1 );
 
 has entries => (
-    is         => 'ro',
+    is         => 'rw',
     isa        => 'ArrayRef[Net::Google::Blogger::Blog::Entry]',
     lazy_build => 1,
     auto_deref => 1,
@@ -73,9 +73,23 @@ sub add_entry {
     return $self->blogger->http_post(
         $self->post_url,
         'Content-Type'  => 'application/atom+xml',
-        'Authorization' => $self->blogger->ua->default_header('Authorization'),
-        'User-Agent'    => 'Test blogger client',
-        Content => $entry->as_xml);
+        Content => $entry->as_xml,
+    );
+}
+
+
+sub delete_entry {
+    ## Deletes given entry from server.
+    my $self = shift;
+    my ($entry) = @_;
+
+    my $response = $self->blogger->http_post(
+        $entry->edit_url,
+        'X-HTTP-Method-Override' => 'DELETE',
+    );
+    die 'Could not delete entry from server: ' . $response->status_line unless $response->is_success;
+
+    $self->entries([ grep $_ ne $entry, $self->entries ]);
 }
 
 
