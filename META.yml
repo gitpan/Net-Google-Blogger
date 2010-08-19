@@ -16,13 +16,13 @@ name: Net-Google-Blogger
 provides:
   Net::Google::Blogger:
     file: lib/Net/Google/Blogger.pm
-    version: 0.07
+    version: 0.08
   Net::Google::Blogger::Blog:
     file: lib/Net/Google/Blogger/Blog.pm
-    version: 0.07
+    version: 0.08
   Net::Google::Blogger::Blog::Entry:
     file: lib/Net/Google/Blogger/Blog/Entry.pm
-    version: 0.07
+    version: 0.08
 requires:
   Any::Moose: 0
   HTTP::Request::Common: 0
@@ -30,4 +30,4 @@ requires:
   XML::Simple: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.07
+version: 0.08

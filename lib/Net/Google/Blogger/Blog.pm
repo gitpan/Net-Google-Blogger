@@ -8,7 +8,7 @@ use Net::Google::Blogger::Blog::Entry;
 use XML::Simple ();
 
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 has id              => ( is => 'ro', isa => 'Str', required => 1 );
 has numeric_id      => ( is => 'ro', isa => 'Str', required => 1 );
@@ -79,7 +79,7 @@ sub add_entry {
 
 
 sub delete_entry {
-    ## Deletes given entry from server.
+    ## Deletes given entry from server as well as list of entries held in blog object.
     my $self = shift;
     my ($entry) = @_;
 
@@ -90,6 +90,16 @@ sub delete_entry {
     die 'Could not delete entry from server: ' . $response->status_line unless $response->is_success;
 
     $self->entries([ grep $_ ne $entry, $self->entries ]);
+}
+
+
+sub destroy {
+    ## Removes references to the blog from child entries, so they're
+    ## no longer circular. Blog object as well as entries can then be
+    ## garbage-collected.
+    my $self = shift;
+
+    $_->blog(undef) foreach $self->entries;
 }
 
 
@@ -107,10 +117,66 @@ Please see L<Net::Google::Blogger>.
 
 =head1 DESCRIPTION
 
-This class represents blog entity operated by Net::Google::Blogger
-package. As of present, you should never instantiate it directly. Only
-C<title>, C<public_url> and C<entries> attributes are for public use, other are
+This class represents a blog in Net::Google::Blogger package. As of
+present, you should never instantiate it directly. Only C<title>,
+C<public_url> and C<entries> attributes are for public use, other are
 subject to change in future versions.
+
+=head1 METHODS
+
+=head3 C<add_entry($entry)>
+
+=over
+
+Adds given entry to the blog. The argument must be an instance of Net::Google::Blogger::Blog::Entry
+
+=back
+
+=head3 C<delete_entry($entry)>
+
+=over
+
+Deletes given entry from server as well as list of entries held in blog object.
+
+=back
+
+=head3 C<destroy()>
+
+=over
+
+Removes references to the blog from child entries, so they're no
+longer circular. Blog object as well as entries can then be
+garbage-collected.
+
+=back
+
+=head1 ATTRIBUTES
+
+=head3 C<title>
+
+=over
+
+Title of the blog.
+
+=back
+
+=head3 C<public_url>
+
+=over
+
+The human-readable URL of the blog. Blogger blogs can have multiple
+URLs, one of which is based on numeric blog ID, and another is
+changeble. This is the second one.
+
+=back
+
+=head3 C<entries>
+
+=over
+
+List of blog entries, lazily populated.
+
+=back
 
 =head1 AUTHOR
 
@@ -119,7 +185,7 @@ Egor Shipovalov, C<< <kogdaugodno at gmail.com> >>
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-net-google-api-blogger at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Net-Google-API-Blogger>.  I will be notified, and then you'll
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Net-Google-Blogger>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
 =head1 SUPPORT
@@ -134,19 +200,19 @@ You can also look for information at:
 
 =item * RT: CPAN's request tracker
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Net-Google-API-Blogger>
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Net-Google-Blogger>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
-L<http://annocpan.org/dist/Net-Google-API-Blogger>
+L<http://annocpan.org/dist/Net-Google-Blogger>
 
 =item * CPAN Ratings
 
-L<http://cpanratings.perl.org/d/Net-Google-API-Blogger>
+L<http://cpanratings.perl.org/d/Net-Google-Blogger>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/Net-Google-API-Blogger/>
+L<http://search.cpan.org/dist/Net-Google-Blogger/>
 
 =back
 

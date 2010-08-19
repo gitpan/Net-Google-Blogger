@@ -7,7 +7,7 @@ use Any::Moose;
 use XML::Simple ();
 
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 has id              => ( is => 'rw', isa => 'Str' );
 has title           => ( is => 'rw', isa => 'Str' );
@@ -19,7 +19,7 @@ has edit_url        => ( is => 'rw', isa => 'Str' );
 has public_url      => ( is => 'rw', isa => 'Str' );
 has source_xml_tree => ( is => 'rw', isa => 'HashRef', default => sub { {} }, required => 1 );
 has categories      => ( is => 'rw', isa => 'ArrayRef[Str]', auto_deref => 1 );
-has blog            => ( is => 'ro', isa => 'Net::Google::Blogger::Blog', required => 1 );
+has blog            => ( is => 'rw', isa => 'Net::Google::Blogger::Blog', required => 1 );
 
 __PACKAGE__->meta->make_immutable;
 
@@ -134,29 +134,80 @@ Please see L<Net::Google::Blogger>.
 
 =head1 ATTRIBUTES
 
+=head3 C<id>
+
 =over
 
-=item * C<id>
+Unique numeric ID of the entry.
 
-=item * C<title>
+=back
 
-=item * C<content>
+=head3 C<title>
 
-=item * C<author>
+=over
 
-=item * C<published>
+Title of the entry.
 
-=item * C<updated>
+=back
 
-=item * C<public_url>
 
-=item * C<edit_url>
+=head3 C<content>
 
-=item * C<source_xml_tree>
+=over
 
-=item * C<categories>
+Content of the entry. Currently entries are always submitted with
+content type set to "html".
 
-=item * C<blog>
+=back
+
+
+=head3 C<author>
+
+=over
+
+Author of the entry, as name only. Editing of this field is currently
+not supported by Blogger API.
+
+=back
+
+=head3 C<published>
+
+=over
+
+Time when entry was published, in ISO format.
+
+=back
+
+=head3 C<updated>
+
+=over
+
+Time when entry was last updated, in ISO format.
+
+=back
+
+=head3 C<public_url>
+
+=over
+
+Unique public URL of the entry.
+
+=back
+
+=head3 C<categories>
+
+=over
+
+Categories (tags) of the entry, as array of strings.
+
+=back
+
+=head3 C<blog>
+
+=over
+
+The blog in which entry is published, as instance of Net::Google::Blogger::Blog
+=back
 
 =back
 
@@ -189,14 +240,14 @@ Egor Shipovalov, C<< <kogdaugodno at gmail.com> >>
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-net-google-api-blogger at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Net-Google-API-Blogger>.  I will be notified, and then you'll
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Net-Google-Blogger>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
 =head1 SUPPORT
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Net::Google::API::Blogger
+    perldoc Net::Google::Blogger
 
 
 You can also look for information at:
@@ -205,19 +256,19 @@ You can also look for information at:
 
 =item * RT: CPAN's request tracker
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Net-Google-API-Blogger>
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Net-Google-Blogger>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
-L<http://annocpan.org/dist/Net-Google-API-Blogger>
+L<http://annocpan.org/dist/Net-Google-Blogger>
 
 =item * CPAN Ratings
 
-L<http://cpanratings.perl.org/d/Net-Google-API-Blogger>
+L<http://cpanratings.perl.org/d/Net-Google-Blogger>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/Net-Google-API-Blogger/>
+L<http://search.cpan.org/dist/Net-Google-Blogger/>
 
 =back
 

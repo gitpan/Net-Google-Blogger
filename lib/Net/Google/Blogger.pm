@@ -12,7 +12,7 @@ use Data::Dumper;
 use Net::Google::Blogger::Blog;
 
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 has login_id   => ( is => 'ro', isa => 'Str', required => 1 );
 has password   => ( is => 'ro', isa => 'Str', required => 1 );
@@ -112,7 +112,7 @@ Net::Google::Blogger - Interface to Google's Blogger service
 
 =head1 VERSION
 
-Version 0.07
+Version 0.08
 
 =cut
 
@@ -223,9 +223,6 @@ L<http://cpanratings.perl.org/d/Net-Google-Blogger>
 L<http://search.cpan.org/dist/Net-Google-Blogger/>
 
 =back
-
-
-=head1 ACKNOWLEDGEMENTS
 
 
 =head1 LICENSE AND COPYRIGHT
