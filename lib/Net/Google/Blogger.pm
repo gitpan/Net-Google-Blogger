@@ -12,7 +12,7 @@ use Data::Dumper;
 use Net::Google::Blogger::Blog;
 
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 has login_id   => ( is => 'ro', isa => 'Str', required => 1 );
 has password   => ( is => 'ro', isa => 'Str', required => 1 );
@@ -108,17 +108,19 @@ __END__
 
 =head1 NAME
 
-Net::Google::Blogger - Interface to Google's Blogger service
+Net::Google::Blogger - (** DEPRECATED **) Interface to Google's Blogger service.
 
 =head1 VERSION
 
-Version 0.08
+Version 0.09
 
 =cut
 
 1;
 
 =head1 SYNOPSIS
+
+This module is deprecated. Please use L<WebService::Blogger>.
 
 This module suite provides interface to the Blogger service now run by
 Google. It's built in object-oriented fashion using Moose, which makes

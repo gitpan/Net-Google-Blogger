@@ -4,16 +4,19 @@ use warnings;
 use strict;
 
 use Any::Moose;
-use Net::Google::Blogger::Blog::Entry;
 use XML::Simple ();
+use URI::Escape ();
+
+use Net::Google::Blogger::Blog::Entry;
 
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 has id              => ( is => 'ro', isa => 'Str', required => 1 );
 has numeric_id      => ( is => 'ro', isa => 'Str', required => 1 );
 has title           => ( is => 'rw', isa => 'Str', required => 1 );
 has public_url      => ( is => 'ro', isa => 'Str', required => 1 );
+has id_url          => ( is => 'ro', isa => 'Str', required => 1 );
 has post_url        => ( is => 'ro', isa => 'Str', required => 1 );
 has source_xml_tree => ( is => 'ro', isa => 'HashRef', required => 1 );
 has blogger         => ( is => 'ro', isa => 'Net::Google::Blogger', required => 1 );
@@ -40,28 +43,74 @@ sub BUILDARGS {
         id         => $id,
         numeric_id => $id =~ /(\d+)$/,
         title      => $params{source_xml_tree}{title}[0]{content},
+        id_url     => (grep $_->{rel} eq 'self', @$links)[0]{href},
         public_url => (grep $_->{rel} eq 'alternate', @$links)[0]{href},
         post_url   => (grep $_->{rel} =~ /#post$/, @$links)[0]{href},
         %params,
-   };
+    };
 }
 
 
 sub _build_entries {
-    ## Populates the entries attribute, loading entries for the blog.
+    ## Populates the entries attribute, loading all entries for the blog.
     my $self = shift;
 
-    my $response = $self->blogger->http_get('http://www.blogger.com/feeds/' . $self->numeric_id . '/posts/default');
+    # Search with no parameters.
+    return $self->search_entries;
+}
+
+
+sub search_entries {
+    ## Returns entries matching search criteria.
+    my $self = shift;
+    my %params = @_;
+
+    # Construct request URL, incorporating category criteria into it, if given.
+    my $url = 'http://www.blogger.com/feeds/' . $self->numeric_id . '/posts/default';
+    $url .= '/-/' . join '/', map URI::Escape::uri_escape($_), @{ $params{categories} }
+        if $params{categories};
+
+    # Map our parameter names to Blogger's.
+    my %params_to_req_args_map = (
+        max_results   => 'max-results',
+        published_min => 'published-min',
+        published_max => 'published-max',
+        updated_min   => 'updated-min',
+        updated_max   => 'updated-max',
+        order_by      => 'orderby',
+        offset        => 'start-index',
+    );
+
+    # Map our sort mode parameter names to Blogger's.
+    my %sort_mode_map = (
+        last_modified => 'lastmodified',
+        start_time    => 'starttime',
+        updated       => 'updated',
+    );
+
+    # Populate request arguments hash WRT above mappings.
+    my %req_args = (
+        alt => 'atom',
+    );
+    foreach (keys %params_to_req_args_map) {
+        $req_args{$params_to_req_args_map{$_}} = $params{$_} if exists $params{$_};
+    }
+    if (my $sort_mode = $params{sort_by}) {
+        $req_args{orderby} = $sort_mode_map{$sort_mode};
+    }
+
+    # Execute request and parse the response.
+    my $response = $self->blogger->http_get($url, %req_args);
     my $response_tree = XML::Simple::XMLin($response->content, ForceArray => 1);
 
-    my $entries = $response_tree->{entry};
-    return [
-        map Net::Google::Blogger::Blog::Entry->new(
-                source_xml_tree => $_,
-                blog            => $self,
-            ),
-            @$entries
-   ];
+    # Return list of entry objects constructed from list of hashes in parsed data.
+    my @entries
+        = map Net::Google::Blogger::Blog::Entry->new(
+                  source_xml_tree => $_,
+                  blog            => $self,
+              ),
+              @{ $response_tree->{entry} };
+    return wantarray ? @entries : \@entries;
 }
 
 
@@ -70,11 +119,17 @@ sub add_entry {
     my $self = shift;
     my ($entry) = @_;
 
-    return $self->blogger->http_post(
+    my $response = $self->blogger->http_post(
         $self->post_url,
-        'Content-Type'  => 'application/atom+xml',
-        Content => $entry->as_xml,
+        'Content-Type' => 'application/atom+xml',
+        Content        => $entry->as_xml,
     );
+
+    die 'Unable to add entry to blog: ' . $response->status_line unless $response->is_success;
+    $entry->update_from_http_response($response);
+
+    push @{ $self->entries }, $entry;
+    return $entry;
 }
 
 
@@ -109,11 +164,11 @@ __END__
 
 =head1 NAME
 
-Net::Google::Blogger::Blog - represents blog entity of Google Blogger service.
+Net::Google::Blogger::Blog - (** DEPRECATED **) represents blog entity of Google Blogger service.
 
 =head1 SYNOPSIS
 
-Please see L<Net::Google::Blogger>.
+This module is deprecated. Please use L<WebService::Blogger>.
 
 =head1 DESCRIPTION
 
@@ -137,6 +192,25 @@ Adds given entry to the blog. The argument must be an instance of Net::Google::B
 =over
 
 Deletes given entry from server as well as list of entries held in blog object.
+
+=back
+
+=head3 C<search_entries(%criteria)>
+
+=over
+
+Returns entries matching specified conditions. The following example
+contains all possible search criteria:
+
+my @entries = $blog->search_entries(
+     published_min => '2010-08-10T23:25:00+04:00'
+     published_max => '2010-07-17T23:25:00+04:00',
+     updated_min   => '2010-09-17T12:25:00+04:00',
+     updated_max   => '2010-09-17T14:00:00+04:00',
+     order_by      => 'start_time', # can also be: 'last_modified' or 'updated'
+     max_results   => 20,
+     offset        => 10,           # skip first 10 entries
+ );
 
 =back
 
@@ -164,9 +238,15 @@ Title of the blog.
 
 =over
 
-The human-readable URL of the blog. Blogger blogs can have multiple
-URLs, one of which is based on numeric blog ID, and another is
-changeble. This is the second one.
+The human-readable, SEO-friendly URL of the blog.
+
+=back
+
+=head3 C<id_url>
+
+=over
+
+The never-changing URL of the blog, based on its numeric ID.
 
 =back
 

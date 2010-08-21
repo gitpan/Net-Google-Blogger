@@ -7,7 +7,7 @@ use Any::Moose;
 use XML::Simple ();
 
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 has id              => ( is => 'rw', isa => 'Str' );
 has title           => ( is => 'rw', isa => 'Str' );
@@ -16,6 +16,7 @@ has author          => ( is => 'rw', isa => 'Str' );
 has published       => ( is => 'rw', isa => 'Str' );
 has updated         => ( is => 'rw', isa => 'Str' );
 has edit_url        => ( is => 'rw', isa => 'Str' );
+has id_url          => ( is => 'rw', isa => 'Str' );
 has public_url      => ( is => 'rw', isa => 'Str' );
 has source_xml_tree => ( is => 'rw', isa => 'HashRef', default => sub { {} }, required => 1 );
 has categories      => ( is => 'rw', isa => 'ArrayRef[Str]', auto_deref => 1 );
@@ -42,6 +43,14 @@ sub source_xml_tree_to_attrs {
     my $class = shift;
     my ($tree) = @_;
 
+    my $get_link_by_rel = sub {
+        ## Returns value for 'href' attribute for link with given 'ref' attribute, if it's present.
+        my ($rel_value) = @_;
+
+        my ($link) = grep $_->{rel} eq $rel_value, @{ $tree->{link} };
+        return $link->{href} if $link;
+     };
+
     return {
         id         => $tree->{id}[0],
         author     => $tree->{author}[0]{name}[0],
@@ -49,10 +58,26 @@ sub source_xml_tree_to_attrs {
         updated    => $tree->{updated}[0],
         title      => $tree->{title}[0]{content},
         content    => $tree->{content}{content},
-        public_url => (grep $_->{rel} eq 'self', @{ $tree->{link} })[0]{href},
-        edit_url   => (grep $_->{rel} eq 'edit', @{ $tree->{link} })[0]{href},
+        public_url => $get_link_by_rel->('alternate'),
+        id_url     => $get_link_by_rel->('self'),
+        edit_url   => $get_link_by_rel->('edit'),
         categories => [ map $_->{term}, @{ $tree->{category} || [] } ],
     };
+}
+
+
+sub update_from_http_response {
+    ## Updates entry internal structures from given HTTP
+    ## response. Used to update entry after it's been created on the
+    ## server.
+    my $self = shift;
+    my ($response) = @_;
+
+    my $xml_tree = XML::Simple::XMLin($response->content, ForceArray => 1);
+    $self->source_xml_tree($xml_tree);
+
+    my $new_attrs = $self->source_xml_tree_to_attrs($xml_tree);
+    $self->$_($new_attrs->{$_}) foreach keys %$new_attrs;
 }
 
 
@@ -91,24 +116,15 @@ sub save {
     ## Saves the entry to blogger.
     my $self = shift;
 
-    my $response;
     if ($self->id) {
         # Update the entry.
-        $response = $self->blog->blogger->http_put($self->edit_url => $self->as_xml);
+        my $response = $self->blog->blogger->http_put($self->edit_url => $self->as_xml);
+        die 'Unable to save entry: ' . $response->status_line unless $response->is_success;
     }
     else {
         # Create new entry.
-        $response = $self->blog->add_entry($self);
-
-        my $xml_tree = XML::Simple::XMLin($response->content, ForceArray => 1);
-        $self->source_xml_tree($xml_tree);
-
-        my $new_attrs = $self->source_xml_tree_to_attrs($xml_tree);
-        $self->$_($new_attrs->{$_}) foreach keys %$new_attrs;
+        $self->blog->add_entry($self);
     }
-
-    die 'Unable to save entry: ' . $response->status_line unless $response->is_success;
-    return $response;
 }
 
 
@@ -126,11 +142,11 @@ __END__
 
 =head1 NAME
 
-Net::Google::Blogger::Entry - represents blog entry in Net::Google::Blogger package.
+Net::Google::Blogger::Entry - (** DEPRECATED **) represents blog entry in Net::Google::Blogger package.
 
 =head1 SYNOPSIS
 
-Please see L<Net::Google::Blogger>.
+This module is deprecated. Please use L<WebService::Blogger>.
 
 =head1 ATTRIBUTES
 
@@ -190,7 +206,15 @@ Time when entry was last updated, in ISO format.
 
 =over
 
-Unique public URL of the entry.
+The human-readable, SEO-friendly URL of the entry.
+
+=back
+
+=head3 C<id_url>
+
+=over
+
+The never-changing URL of the entry, based on its numeric ID.
 
 =back
 
@@ -207,7 +231,6 @@ Categories (tags) of the entry, as array of strings.
 =over
 
 The blog in which entry is published, as instance of Net::Google::Blogger::Blog
-=back
 
 =back
 
